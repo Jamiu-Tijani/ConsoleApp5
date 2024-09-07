@@ -1,78 +1,68 @@
-﻿using System.Security.Cryptography;
+﻿
 
-List<Student> students = [
-    new Student(1, "Augustine"), 
-    new Student(2, "Barak"), 
-    new Student(3, "Khadijat"), 
-    new Student(4, "Abdul"), 
-    new Student(5, "Pelumi"), 
-    new Student(6, "Oluwatosin"),
-    new Student(7, "Pelumi"),
-    new Student(8, "Esther"),
-    new Student(9, "Sulaimon")
-    ];
-List<StudentRecord> studentRecords = [];
 
-foreach (Student student in students)
+
+using ConsoleApp5.ClassList;
+using System;
+using System.Collections.Generic;
+
+List<string> names = ["AbdulSamad", "AbdulJamilu", "Oluwatosin", "Augustine", "Pelumi"];
+List<Customer> customers = new List<Customer>();
+var atm = new Atm("Wema", 1000000m);
+int customerPin;
+Customer operatingCustomer = new Customer("", 0000, AccountType.Savings, 0);
+decimal withdrawalAmount;
+decimal balance;
+
+foreach (string name in names)
 {
-    studentRecords.Add(new StudentRecord(student.Id, new Random().Next(25,100), new Random().Next(25, 100)));
+    customers.Add(
+        new Customer(
+        name,
+        new Random().Next(1000, 5000), // Generating customer pin
+        AccountType.Savings,
+        new Random().Next(10000, 50000) // Generating customer account balance
+        ));
 }
 
-
-var studentGrades = from stud in students
-                    join rec in studentRecords on stud.Id equals rec.StudentId
-                    select new {
-                        stud.Id,
-                        stud.FullName,
-                        rec.EnglishScore,
-                        rec.MathsScore,
-                        mathGrade = rec.MathsScore >= 70 ? "A" :
-                                   rec.MathsScore >= 50 ? "B" :
-                                   rec.MathsScore >= 40 ? "C" :
-                                   rec.MathsScore >= 30 ? "D" : "F",
-                        englishGrade = rec.EnglishScore >= 70 ? "A" :
-                                   rec.EnglishScore >= 50 ? "B" :
-                                   rec.EnglishScore >= 40 ? "C" :
-                                   rec.EnglishScore >= 30 ? "D" : "F"
-
-                    };
-
-Console.WriteLine("STUDENT GRADES");
-Console.WriteLine("Name       Eng Score       Mat Score      Eng Grade       Mat Grade");
-foreach (var student in studentGrades)
+foreach (Customer customer in customers)
 {
-    Console.WriteLine($"{student.FullName}     {student.EnglishScore}           {student.MathsScore}                {student.englishGrade}                    {student.mathGrade}");
+    Console.WriteLine(customer.Name);
+    Console.WriteLine();
+    Console.WriteLine(customer.Pin);
+    Console.WriteLine();
+    Console.WriteLine(customer.AccountBalance);
 }
 
+Console.WriteLine($"Welcome {atm.BankName} ATM");
 
+Console.WriteLine("Please Input Your Pin");
 
-public class Student
+customerPin = Convert.ToInt32(Console.ReadLine());
+
+foreach (Customer customer in customers)
 {
-    public int Id { get; set; }
-    public string FullName { get; set; }
-
-    public Student (int id, string fullName)
+    if (customer.Pin == customerPin)
     {
-
-        Id = id; 
-        FullName = fullName; 
-    }
-}
-
-
-public class StudentRecord
-{
-    public int StudentId { get; set; }
-    public int EnglishScore { get; set; }
-    public int MathsScore { get; set; }
-
-    public StudentRecord (int studentId, int englishScore, int mathsScore)
-    {
-        StudentId = studentId;
-        EnglishScore = englishScore;
-        MathsScore = mathsScore;
+        operatingCustomer = customer;
+        Console.WriteLine(customer.Name);
     }
 
-
 }
+
+Console.WriteLine("Please Input Withdrawal Amount");
+withdrawalAmount = Convert.ToDecimal(Console.ReadLine());
+
+balance = operatingCustomer.Withdraw(withdrawalAmount);
+
+if (balance < 0)
+{
+    Console.WriteLine("Insufficient Funds");
+}
+else
+{
+    Console.WriteLine($"{operatingCustomer.Name}  {withdrawalAmount} Successfully Withdrawn  new Account Balance is {operatingCustomer.AccountBalance}");
+}
+
+
 
